@@ -1,0 +1,45 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Application Uptime (Seconds)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "app_uptime_seconds", "legendFormat": "Uptime" }]
+    },
+    {
+      "title": "Total HTTP Requests Handled",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [{ "expr": "app_requests_total", "legendFormat": "Requests" }]
+    },
+    {
+      "title": "Total Stored Students (Gauge)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "app_students_total", "legendFormat": "Students" }]
+    },
+    {
+      "title": "JVM Memory Utilization (Bytes)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 18, "x": 0, "y": 6 },
+      "targets": [
+        { "expr": "jvm_memory_used_bytes", "legendFormat": "Used Memory" },
+        { "expr": "jvm_memory_total_bytes", "legendFormat": "Total Memory" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["devops", "capstone", "java"],
+  "time": { "from": "now-15m", "to": "now" },
+  "timezone": "browser",
+  "title": "DevOps Capstone - Student Management Dashboard"
+}

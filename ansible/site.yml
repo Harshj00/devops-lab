@@ -1,0 +1,5 @@
+---
+- name: Master DevOps Infrastructure Orchestration Playbook
+  import_playbook: docker_install.yml
+- name: Deploy Application Services
+  import_playbook: app_deploy.yml

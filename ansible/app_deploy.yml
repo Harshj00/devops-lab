@@ -1,0 +1,36 @@
+---
+- name: Deploy Cloud-Native Student Management Container Stack
+  hosts: webservers
+  vars:
+    app_dir: /opt/devops-lab
+    app_image: harshj00/devops-lab:1.0
+
+  tasks:
+    - name: Create project deployment directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy docker-compose specification
+      copy:
+        src: ../docker-compose.yml
+        dest: "{{ app_dir }}/docker-compose.yml"
+        mode: '0644'
+
+    - name: Pull latest application container images
+      command: docker compose -f {{ app_dir }}/docker-compose.yml pull
+      ignore_errors: yes
+
+    - name: Launch or update multi-container services
+      command: docker compose -f {{ app_dir }}/docker-compose.yml up -d --remove-orphans
+
+    - name: Verify application endpoint readiness
+      uri:
+        url: http://localhost:8080/health
+        status_code: 200
+        return_content: yes
+      register: health_check
+      retries: 6
+      delay: 5
+      until: health_check.status == 200

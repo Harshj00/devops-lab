@@ -1,0 +1,73 @@
+services:
+  # Primary Cloud-Native Student Management Web Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: harshj00/devops-lab:1.0
+    container_name: devops-lab-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=studentdb
+      - DB_USER=postgres
+      - DB_PASSWORD=devopspassword
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - devops-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Relational Database Service (PostgreSQL)
+  db:
+    image: postgres:16-alpine
+    container_name: devops-lab-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: studentdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devopspassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - devops-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Background Asynchronous Task Worker
+  worker:
+    image: harshj00/devops-lab:1.0
+    container_name: devops-lab-worker
+    restart: unless-stopped
+    environment:
+      - WORKER_MODE=true
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - devops-net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  devops-net:
+    driver: bridge
